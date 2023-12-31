@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import APIKeyManager from './components/APIKeyManager';
+import SpeakersManagement from './components/SpeakersManagement';
+import DialogCreation from './components/DialogCreation';
+import AudioGeneration from './components/AudioGeneration';
 
-function App() {
+const App = () => {
+  const speakers = ['Speaker 1', 'Speaker 2', 'Speaker 3']; // Example speakers list
+  const [dialog, setDialog] = useState([]);
+  const [globalApiKey, setGlobalApiKey] = useState('');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <APIKeyManager setGlobalApiKey={setGlobalApiKey} />
+      <SpeakersManagement />
+      <DialogCreation speakers={speakers} dialog={dialog} setDialog={setDialog} />
+      <AudioGeneration dialog={dialog} />
     </div>
   );
-}
+};
 
 export default App;
