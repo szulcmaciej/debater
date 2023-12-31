@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
-const DialogCreation = ({ speakers }) => {
-  const [dialog, setDialog] = useState([]);
+const DialogCreation = ({ speakers, dialog, setDialog }) => {
 
   const addStatement = () => {
     setDialog([...dialog, { speaker: speakers[0], text: '' }]);
@@ -23,10 +22,10 @@ const DialogCreation = ({ speakers }) => {
             onChange={(e) => updateStatement(index, 'speaker', e.target.value)}
           >
             {speakers.map((speaker, i) => (
-              <option key={i} value={speaker}>
-                {speaker}
-              </option>
-            ))}
+                <option key={i} value={speaker}>
+                    {speaker.name}
+                </option>
+                ))}
           </select>
           <input
             type="text"

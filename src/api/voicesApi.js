@@ -6,7 +6,9 @@ export const fetchVoices = async (apiKey) => {
     const response = await axios.get('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKey }
     });
-    return response.data.voices; // Returns the list of voices
+    // Filter voices to include only those with category 'cloned'
+    const clonedVoices = response.data.voices.filter(voice => voice.category === 'cloned');
+    return clonedVoices; // Return only the filtered voices
   } catch (error) {
     console.error('Error fetching voices:', error);
     throw error; // Rethrow the error to handle it in the calling component

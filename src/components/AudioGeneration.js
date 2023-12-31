@@ -1,10 +1,14 @@
 import React from 'react';
+import { generateAndDownloadDialog } from '../api/audio'
 
-const AudioGeneration = ({ dialog }) => {
+const AudioGeneration = ({ dialog, apiKey }) => {
   const generateAudio = async () => {
-    // Here, you would integrate with the ElevenLabs API
-    // to generate the audio for the dialog
-    console.log('Generating audio for dialog:', dialog);
+    try {
+      await generateAndDownloadDialog(dialog, apiKey);
+    } catch (error) {
+      console.error('Error generating audio for dialog:', error);
+      // Handle error (e.g., show an error message to the user)
+    }
   };
 
   return (
