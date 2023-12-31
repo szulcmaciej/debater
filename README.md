@@ -6,7 +6,7 @@ Just write the dialog, select the voices and download the whole thing in a singl
 
 All you need is your ElevenLabs API key.
 
-
+This is still under development, don't expect a fancy UI or some proper error handling 😁
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
