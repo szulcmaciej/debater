@@ -1,21 +1,6 @@
 import axios from 'axios';
+import Crunker from 'crunker';
 
-export const generateDialogAudio = async (dialog, apiKey) => {
-    const audioFiles = [];
-  
-    for (const statement of dialog) {
-      try {
-        const audio = await generateAudioForStatement(apiKey, statement.text, statement.speaker);
-        audioFiles.push(audio);
-      } catch (error) {
-        console.error('Error generating audio for statement:', error);
-        // Handle error appropriately
-      }
-    }
-  
-    // TODO: Concatenate audioFiles here (client-side or send to server)
-  };
-  
 export const generateAudioForStatement = async (apiKey, voiceId, text) => {
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
     const data = {
@@ -53,27 +38,26 @@ export const downloadAudio = (audioBlob) => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-  
-  
-  const concatenateAudioBuffers = (audioBuffers) => {
-    // Concatenate the audio buffers into one Blob
-    let blob = new Blob(audioBuffers, { type: 'audio/mpeg' });
-    return blob;
-  };
 
-  // Function to handle the entire process
 export const generateAndDownloadDialog = async (dialog, apiKey) => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let buffers = [];
+    const crunker = new Crunker();
+    try {
+      const audioBlobs = await Promise.all(
+        dialog.map(statement => generateAudioForStatement(apiKey, statement.speaker.voice_id, statement.text))
+      );
   
-    for (const statement of dialog) {
-      const audioBlob = await generateAudioForStatement(apiKey, statement.speaker.voice_id, statement.text);
-      downloadAudio(audioBlob);
-      const arrayBuffer = await audioBlob.arrayBuffer();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      buffers.push(audioBuffer);
+      // Convert each blob to an ArrayBuffer
+      const arrayBuffers = await Promise.all(audioBlobs.map(blob => blob.arrayBuffer()));
+  
+      // Convert ArrayBuffers to AudioBuffers
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffers = await Promise.all(arrayBuffers.map(arrayBuffer => audioContext.decodeAudioData(arrayBuffer)));
+  
+      // Use Crunker to concatenate audio buffers and export the final audio
+      const concatenated = crunker.concatAudio(audioBuffers);
+      const output = crunker.export(concatenated, 'audio/mp3');
+      crunker.download(output.blob, 'dialog');
+    } catch (error) {
+      console.error('Error in generating or downloading dialog audio:', error);
     }
-  
-    const finalAudioBlob = concatenateAudioBuffers(buffers);
-    downloadAudio(finalAudioBlob);
   };
