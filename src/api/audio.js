@@ -8,7 +8,7 @@ export const generateAudioForStatement = async (apiKey, voiceId, text) => {
       text: text,
       voice_settings: {
         stability: 0.5,
-        similarity_boost: 0.5
+        similarity_boost: 0.75
         // other settings if needed
       }
     };
@@ -43,14 +43,14 @@ export const generateAndDownloadDialog = async (dialog, apiKey) => {
     const crunker = new Crunker();
     try {
       const audioBlobs = await Promise.all(
-        dialog.map(statement => generateAudioForStatement(apiKey, statement.speaker.voice_id, statement.text))
+        dialog.map(statement => generateAudioForStatement(apiKey, statement.speaker, statement.text))
       );
   
       // Convert each blob to an ArrayBuffer
       const arrayBuffers = await Promise.all(audioBlobs.map(blob => blob.arrayBuffer()));
   
       // Convert ArrayBuffers to AudioBuffers
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)({sampleRate: 44100});
       const audioBuffers = await Promise.all(arrayBuffers.map(arrayBuffer => audioContext.decodeAudioData(arrayBuffer)));
   
       // Use Crunker to concatenate audio buffers and export the final audio
