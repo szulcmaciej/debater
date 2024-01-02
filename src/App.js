@@ -28,7 +28,7 @@ const App = () => {
     <div>
       <APIKeyManager setGlobalApiKey={setGlobalApiKey} />
       {/* <SpeakersManagement /> */}
-      <DialogCreation speakers={voices} dialog={dialog} setDialog={setDialog} />
+      <DialogCreation speakers={voices} dialog={dialog} setDialog={setDialog} apiKey={globalApiKey}/>
       <AudioGeneration dialog={dialog} apiKey={globalApiKey}/>
     </div>
   );
