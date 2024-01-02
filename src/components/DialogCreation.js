@@ -48,47 +48,52 @@ const playAudio = async (statement) => {
 
   return (
     <div className="flex flex-col items-center p-4">
-      <div className="w-full max-w-md space-y-4">
+    <div className="w-full max-w-xl space-y-4">
         {dialog.map((statement, index) => (
-          <div key={index} className="flex items-center space-x-2 bg-gray-100 p-3 rounded-lg">
-            <select
-              className="bg-transparent flex-1"
-              value={statement.speaker}
-              onChange={(e) => updateStatement(index, 'speaker', e.target.value)}
-            >
-              {speakers.map((speaker, i) => (
-                <option key={i} value={speaker.voice_id}>{speaker.name}</option>
-              ))}
-            </select>
-            <input
-              className="flex-2 bg-white border border-gray-300 p-2 rounded"
-              type="text"
-              value={statement.text}
-              onChange={(e) => updateStatement(index, 'text', e.target.value)}
-              placeholder="Enter text here"
-            />
-            <button 
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => removeStatement(index)}>
-                <FaTrash />
-            </button>
-            <button 
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => generateAudio(index)}>
-                <FaRegLightbulb />
-            </button>
+            <div key={index} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-gray-100 p-3 rounded-lg">
+                <select
+                    className="flex-1 bg-white border border-gray-300 p-2 rounded"
+                    value={statement.speaker}
+                    onChange={(e) => updateStatement(index, 'speaker', e.target.value)}
+                >
+                    {speakers.map((speaker, i) => (
+                        <option key={i} value={speaker.voice_id}>{speaker.name}</option>
+                    ))}
+                </select>
+                <input
+                    className="flex-2 bg-white border border-gray-300 p-2 rounded"
+                    type="text"
+                    value={statement.text}
+                    onChange={(e) => updateStatement(index, 'text', e.target.value)}
+                    placeholder="Enter text here"
+                />
+                <div className="flex flex-row items-center space-y-0 space-x-2 bg-gray-100 p-3 rounded-lg">
+                    <button 
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => removeStatement(index)}>
+                        <FaTrash />
+                    </button>
+                    <button 
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => generateAudio(index)}>
+                        <FaRegLightbulb />
+                    </button>
+                    <button 
+                        className={`font-bold py-2 px-4 rounded ${statement.generatedAudio && statement.text === statement.prevText ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-gray-500 text-gray-300 cursor-not-allowed'}`}
+                        onClick={() => playAudio(statement)}
+                        disabled={!statement.generatedAudio || statement.text !== statement.prevText}>
+                        <FaPlay />
+                    </button>
+                </div>
+            </div>
+        ))}
+        <div className="flex justify-center">
             <button 
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => playAudio(statement)}>
-                <FaPlay />
+                onClick={addStatement}>
+                Add Statement
             </button>
-          </div>
-        ))}
-        <button 
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={addStatement}>
-          Add Statement
-        </button>
+        </div>
       </div>
     </div>
   );
