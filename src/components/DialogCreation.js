@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaTrash, FaPlay, FaRegLightbulb, FaCheck, FaRedo, FaCheckCircle, FaLightbulb } from 'react-icons/fa';
 import { elevenTextToSpeech, concatenateStatementsAudio } from '../api/audio';
 
-const DialogCreation = ({ speakers, dialog, setDialog, apiKey }) => {
+const DialogCreation = ({ speakers, apiKey }) => {
+    const [dialog, setDialog] = useState([]);
   const addStatement = () => {
     setDialog([...dialog, { speaker: speakers[0]?.voice_id, text: '', audio: null}]);
   };
@@ -45,7 +46,7 @@ const generateAudioForAllStatements = async () => {
 
 const generateDialogAudio = async () => {
     try {
-        await generateAudioForAllStatements();
+       await generateAudioForAllStatements();
        const dialogAudio = await concatenateStatementsAudio(dialog);
        playAudio(dialogAudio);
     } catch (error) {

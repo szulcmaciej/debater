@@ -5,7 +5,6 @@ import SpeakersManagement from './components/SpeakersManagement';
 import DialogCreation from './components/DialogCreation';
 
 const App = () => {
-  const [dialog, setDialog] = useState([]);
   const [globalApiKey, setGlobalApiKey] = useState('');
   const [voices, setVoices] = useState([]);
 
@@ -27,7 +26,7 @@ const App = () => {
     <div>
       <APIKeyManager setGlobalApiKey={setGlobalApiKey} />
       {/* <SpeakersManagement /> */}
-      <DialogCreation speakers={voices} dialog={dialog} setDialog={setDialog} apiKey={globalApiKey}/>
+      <DialogCreation speakers={voices} apiKey={globalApiKey}/>
     </div>
   );
 };
