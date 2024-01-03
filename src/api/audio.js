@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Crunker from 'crunker';
 
-export const generateAudioForStatement = async (apiKey, voiceId, text) => {
+export const elevenTextToSpeech = async (apiKey, voiceId, text) => {
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
     const data = {
       model_id: "eleven_multilingual_v2", // or another model ID as per your requirement
@@ -39,12 +39,10 @@ export const downloadAudio = (audioBlob) => {
     window.URL.revokeObjectURL(url);
   };
 
-export const generateAndDownloadDialog = async (dialog, apiKey) => {
+export const concatenateStatementsAudio = async (dialog) => {
     const crunker = new Crunker();
     try {
-      const audioBlobs = await Promise.all(
-        dialog.map(statement => generateAudioForStatement(apiKey, statement.speaker, statement.text))
-      );
+      const audioBlobs = dialog.map(statement => statement.generatedAudio);
   
       // Convert each blob to an ArrayBuffer
       const arrayBuffers = await Promise.all(audioBlobs.map(blob => blob.arrayBuffer()));
@@ -56,7 +54,8 @@ export const generateAndDownloadDialog = async (dialog, apiKey) => {
       // Use Crunker to concatenate audio buffers and export the final audio
       const concatenated = crunker.concatAudio(audioBuffers);
       const output = crunker.export(concatenated, 'audio/mp3');
-      crunker.download(output.blob, 'dialog');
+    //   crunker.download(output.blob, 'dialog');
+      return output.blob;
     } catch (error) {
       console.error('Error in generating or downloading dialog audio:', error);
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaTrash, FaPlay, FaRegLightbulb, FaCheck, FaRedo, FaCheckCircle, FaLightbulb } from 'react-icons/fa';
-import { generateAudioForStatement } from '../api/audio';
+import { elevenTextToSpeech, concatenateStatementsAudio } from '../api/audio';
 
 const DialogCreation = ({ speakers, dialog, setDialog, apiKey }) => {
   const addStatement = () => {
@@ -20,27 +20,52 @@ const DialogCreation = ({ speakers, dialog, setDialog, apiKey }) => {
     };
 
 
-const generateAudio = async (index) => {
+const generateAudioForStatement = async (index) => {
     const statement = dialog[index];
     const voiceId = statement.speaker; // Get the voiceId from the statement
 
     try {
-        const audioBlob = await generateAudioForStatement(apiKey, voiceId, statement.text);
+        const audioBlob = await elevenTextToSpeech(apiKey, voiceId, statement.text);
         setDialog(prevDialog => prevDialog.map((line, i) => i === index ? {...line, generatedAudio: audioBlob, prevText: line.text} : line));
     } catch (error) {
         console.error('Error in generating audio:', error);
     }
 };
 
-const playAudio = async (statement) => {
+const generateAudioForAllStatements = async () => {
+    try {
+        const promises = dialog
+            .filter(statement => !statement.generatedAudio) // Filter statements that don't have audio yet
+            .map((statement, index) => generateAudioForStatement(index));
+        await Promise.all(promises);
+    } catch (error) {
+        console.error('Error in generating audio:', error);
+    }
+};
+
+const generateDialogAudio = async () => {
+    try {
+        await generateAudioForAllStatements();
+       const dialogAudio = await concatenateStatementsAudio(dialog);
+       playAudio(dialogAudio);
+    } catch (error) {
+        console.error('Error in generating audio:', error);
+    }
+};
+
+const playStatementAudio = async (statement) => {
     if (statement.generatedAudio) {
-        try {
-            const url = window.URL.createObjectURL(statement.generatedAudio);
-            const audio = new Audio(url);
-            audio.play();
-        } catch (error) {
-            console.error('Error in playing audio:', error);
-        }
+        playAudio(statement.generatedAudio);
+    }
+};
+
+const playAudio = async (audioBlob) => {
+    try {
+        const url = window.URL.createObjectURL(audioBlob);
+        const audio = new Audio(url);
+        audio.play();
+    } catch (error) {
+        console.error('Error in playing audio:', error);
     }
 };
 
@@ -73,13 +98,13 @@ const playAudio = async (statement) => {
                     </button>
                     <button 
                         className={`font-bold py-2 px-4 rounded ${statement.text === statement.prevText ? 'bg-green-500 hover:bg-green-700 text-white' : 'bg-yellow-500 hover:bg-yellow-700 text-white'}`}
-                        onClick={() => generateAudio(index)}
+                        onClick={() => generateAudioForStatement(index)}
                         title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
                         {statement.text === statement.prevText ? <FaRedo /> : <FaLightbulb />}
                     </button>
                     <button 
                         className={`font-bold py-2 px-4 rounded ${statement.generatedAudio && statement.text === statement.prevText ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-gray-500 text-gray-300 cursor-not-allowed'}`}
-                        onClick={() => playAudio(statement)}
+                        onClick={() => playStatementAudio(statement)}
                         disabled={!statement.generatedAudio || statement.text !== statement.prevText}
                         title={statement.generatedAudio && statement.text === statement.prevText ? 'Play Audio' : 'Audio not available, generate it first with the other button.'}>
                         <FaPlay />
@@ -95,7 +120,13 @@ const playAudio = async (statement) => {
             </button>
         </div>
       </div>
+      <div>
+        <h2>Generate Audio</h2>
+        <button onClick={() => generateAudioForAllStatements()}>Generate Audio for all statements</button>
+        <button onClick={() => generateDialogAudio()}>Generate audio dialog</button>
+      </div>
     </div>
+    
   );
 };
 
