@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTrash, FaPlay, FaRedo, FaLightbulb } from 'react-icons/fa';
+import { FaTrash, FaPlay, FaRedo, FaLightbulb, FaPlus } from 'react-icons/fa';
 import { elevenTextToSpeech, concatenateStatementsAudio } from '../api/audio';
 
 const DialogCreation = ({ speakers, apiKey }) => {
@@ -136,15 +136,15 @@ const DialogCreation = ({ speakers, apiKey }) => {
                 ))}
                 <div className="flex justify-center">
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                         onClick={addStatement}>
-                        Add Statement
+                        <FaPlus />
                     </button>
                 </div>
             </div>
             <div>
                 <div className="flex justify-center py-4">
-                    <h2>Whole debate audio</h2>
+                    {/* <h2>Whole debate audio</h2> */}
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => generateDialogAudio()}>Generate debate audio</button>
