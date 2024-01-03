@@ -6,7 +6,7 @@ const DialogCreation = ({ speakers, apiKey }) => {
     const [dialog, setDialog] = useState([]);
     const [generatedDialogAudio, setGeneratedDialogAudio] = useState(null);
     const addStatement = () => {
-        setDialog([...dialog, { speaker: speakers[0]?.voice_id, text: '', audio: null }]);
+        setDialog([...dialog, { speaker: speakers[0]?.voice_id, text: '', }]);
     };
 
     const updateStatement = (index, field, value) => {
@@ -35,17 +35,27 @@ const DialogCreation = ({ speakers, apiKey }) => {
     };
 
     const generateAudioForAllStatements = async () => {
-        dialog.forEach(async (statement, index) => {
-            if (!statement.generatedAudio) {
-                await generateAudioForStatement(index);
+        var newDialog = [...dialog];
+        await Promise.all(dialog.map(async (statement, index) => {
+            if (!statement.generatedAudio || statement.text !== statement.prevText) {
+                try {
+                    const audioBlob = await elevenTextToSpeech(apiKey, statement.speaker, statement.text);
+                    newDialog[index] = { ...statement, generatedAudio: audioBlob, prevText: statement.text };
+                } catch (error) {
+                    console.error('Error in generating audio:', error);
+                }
+
             }
-        });
+        }));
+        setDialog(newDialog);
+        return newDialog;
     };
 
     const generateDialogAudio = async () => {
         try {
-            await generateAudioForAllStatements();
-            const dialogAudio = await concatenateStatementsAudio(dialog);
+            const dialogWithAudio = await generateAudioForAllStatements();
+            console.log('Generating dialog audio...');
+            const dialogAudio = await concatenateStatementsAudio(dialogWithAudio);
             setGeneratedDialogAudio(dialogAudio);
         } catch (error) {
             console.error('Error in generating audio:', error);
@@ -137,9 +147,9 @@ const DialogCreation = ({ speakers, apiKey }) => {
                     <h2>Whole debate audio</h2>
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => generateDialogAudio()}>Generate audio dialog</button>
-                    <button className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!generatedDialogAudio ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => playAudio(generatedDialogAudio)} disabled={!generatedDialogAudio}>Play audio dialog</button>
-                    <button className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!generatedDialogAudio ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => saveBlob(generatedDialogAudio, 'dialog.mp3')} disabled={!generatedDialogAudio}>Save audio dialog</button>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => generateDialogAudio()}>Generate debate audio</button>
+                    <button className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!generatedDialogAudio ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => playAudio(generatedDialogAudio)} disabled={!generatedDialogAudio}>Play debate</button>
+                    <button className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!generatedDialogAudio ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => saveBlob(generatedDialogAudio, 'dialog.mp3')} disabled={!generatedDialogAudio}>Save mp3</button>
                 </div>
             </div>
         </div>
