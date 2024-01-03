@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTrash, FaPlay, FaRegLightbulb } from 'react-icons/fa';
+import { FaTrash, FaPlay, FaRegLightbulb, FaCheck, FaRedo, FaCheckCircle, FaLightbulb } from 'react-icons/fa';
 import { generateAudioForStatement } from '../api/audio';
 
 const DialogCreation = ({ speakers, dialog, setDialog, apiKey }) => {
@@ -24,13 +24,11 @@ const generateAudio = async (index) => {
     const statement = dialog[index];
     const voiceId = statement.speaker; // Get the voiceId from the statement
 
-    if (!statement.generatedAudio || statement.text !== statement.prevText) {
-        try {
-            const audioBlob = await generateAudioForStatement(apiKey, voiceId, statement.text);
-            setDialog(prevDialog => prevDialog.map((line, i) => i === index ? {...line, generatedAudio: audioBlob, prevText: line.text} : line));
-        } catch (error) {
-            console.error('Error in generating audio:', error);
-        }
+    try {
+        const audioBlob = await generateAudioForStatement(apiKey, voiceId, statement.text);
+        setDialog(prevDialog => prevDialog.map((line, i) => i === index ? {...line, generatedAudio: audioBlob, prevText: line.text} : line));
+    } catch (error) {
+        console.error('Error in generating audio:', error);
     }
 };
 
@@ -74,14 +72,16 @@ const playAudio = async (statement) => {
                         <FaTrash />
                     </button>
                     <button 
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => generateAudio(index)}>
-                        <FaRegLightbulb />
+                        className={`font-bold py-2 px-4 rounded ${statement.text === statement.prevText ? 'bg-green-500 hover:bg-green-700 text-white' : 'bg-yellow-500 hover:bg-yellow-700 text-white'}`}
+                        onClick={() => generateAudio(index)}
+                        title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
+                        {statement.text === statement.prevText ? <FaRedo /> : <FaLightbulb />}
                     </button>
                     <button 
                         className={`font-bold py-2 px-4 rounded ${statement.generatedAudio && statement.text === statement.prevText ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-gray-500 text-gray-300 cursor-not-allowed'}`}
                         onClick={() => playAudio(statement)}
-                        disabled={!statement.generatedAudio || statement.text !== statement.prevText}>
+                        disabled={!statement.generatedAudio || statement.text !== statement.prevText}
+                        title={statement.generatedAudio && statement.text === statement.prevText ? 'Play Audio' : 'Audio not available, generate it first with the other button.'}>
                         <FaPlay />
                     </button>
                 </div>
