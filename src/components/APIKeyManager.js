@@ -20,14 +20,15 @@ const APIKeyManager = ({ setGlobalApiKey }) => {
   };
 
   return (
-    <div>
-      <label>
+    <div className="w-full text-center">
+      <label className="block">
         Enter your ElevenLabs API Key:
         <input
           type="text"
           value={apiKey}
           onChange={handleApiKeyChange}
           placeholder="API Key"
+          className="w-full my-2 p-2 border border-gray-300 rounded" // Add the CSS class for styling
         />
       </label>
     </div>
