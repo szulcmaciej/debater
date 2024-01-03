@@ -105,12 +105,12 @@ const DialogCreation = ({ speakers, apiKey }) => {
                                 <option key={i} value={speaker.voice_id}>{speaker.name}</option>
                             ))}
                         </select>
-                        <input
+                        <textarea
                             className="flex-2 bg-white border border-gray-300 p-2 rounded"
-                            type="text"
                             value={statement.text}
                             onChange={(e) => updateStatement(index, 'text', e.target.value)}
                             placeholder="Enter text here"
+                            rows={2}
                         />
                         <div className="flex flex-row items-center space-y-0 space-x-2 bg-gray-100 p-3 rounded-lg">
                             <button
