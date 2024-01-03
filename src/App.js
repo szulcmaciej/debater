@@ -3,7 +3,6 @@ import { fetchVoices } from './api/voicesApi';
 import APIKeyManager from './components/APIKeyManager';
 import SpeakersManagement from './components/SpeakersManagement';
 import DialogCreation from './components/DialogCreation';
-import AudioGeneration from './components/AudioGeneration';
 
 const App = () => {
   const [dialog, setDialog] = useState([]);
@@ -29,7 +28,6 @@ const App = () => {
       <APIKeyManager setGlobalApiKey={setGlobalApiKey} />
       {/* <SpeakersManagement /> */}
       <DialogCreation speakers={voices} dialog={dialog} setDialog={setDialog} apiKey={globalApiKey}/>
-      <AudioGeneration dialog={dialog} apiKey={globalApiKey}/>
     </div>
   );
 };
