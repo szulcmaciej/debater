@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaTrash, FaRedo, FaLightbulb, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaRedo, FaLightbulb, FaPlus, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { elevenTextToSpeech, concatenateStatementsAudio } from '../api/audio';
 
 const DialogCreation = ({ speakers, apiKey }) => {
@@ -21,6 +21,26 @@ const DialogCreation = ({ speakers, apiKey }) => {
     const removeStatement = (index) => {
         const updatedDialog = [...dialog];
         updatedDialog.splice(index, 1);
+        setDialog(updatedDialog);
+    };
+
+    const moveStatementUp = (index) => {
+        if (index === 0) return; // Can't move the first statement up
+    
+        const updatedDialog = [...dialog];
+        const temp = updatedDialog[index];
+        updatedDialog[index] = updatedDialog[index - 1];
+        updatedDialog[index - 1] = temp;
+        setDialog(updatedDialog);
+    };
+
+    const moveStatementDown = (index) => {
+        if (index === dialog.length - 1) return; // Can't move the last statement down
+
+        const updatedDialog = [...dialog];
+        const temp = updatedDialog[index];
+        updatedDialog[index] = updatedDialog[index + 1];
+        updatedDialog[index + 1] = temp;
         setDialog(updatedDialog);
     };
 
@@ -114,7 +134,7 @@ const DialogCreation = ({ speakers, apiKey }) => {
                                 placeholder="Enter text here"
                                 rows={2}
                             />
-                            <div className="flex flex-row items-center space-y-0 space-x-2 bg-gray-100 p-3 rounded-lg">
+                            <div className="flex flex-row justify-center space-y-0 space-x-2 bg-gray-100 p-3 rounded-lg">
                                 <button
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={() => removeStatement(index)}>
@@ -125,6 +145,20 @@ const DialogCreation = ({ speakers, apiKey }) => {
                                     onClick={() => generateAudioForStatement(index)}
                                     title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
                                     {statement.text === statement.prevText ? <FaRedo /> : <FaLightbulb />}
+                                </button>
+                                <button
+                                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${index === 0 ? ' opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={() => moveStatementUp(index)}
+                                    disabled={index === 0}
+                                    >
+                                    <FaArrowUp />
+                                </button>
+                                <button
+                                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${index === dialog.length - 1 ? ' opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={() => moveStatementDown(index)}
+                                    disabled={index === dialog.length - 1}
+                                    >
+                                    <FaArrowDown />
                                 </button>
                             </div>
                         </div>
