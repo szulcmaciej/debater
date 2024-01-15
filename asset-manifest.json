@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/debater/static/css/main.f5bf8d9a.css",
-    "main.js": "/debater/static/js/main.ad65a419.js",
+    "main.css": "/debater/static/css/main.8c4d46d5.css",
+    "main.js": "/debater/static/js/main.3fdef72f.js",
     "static/js/787.ffe28306.chunk.js": "/debater/static/js/787.ffe28306.chunk.js",
     "index.html": "/debater/index.html",
-    "main.f5bf8d9a.css.map": "/debater/static/css/main.f5bf8d9a.css.map",
-    "main.ad65a419.js.map": "/debater/static/js/main.ad65a419.js.map",
+    "main.8c4d46d5.css.map": "/debater/static/css/main.8c4d46d5.css.map",
+    "main.3fdef72f.js.map": "/debater/static/js/main.3fdef72f.js.map",
     "787.ffe28306.chunk.js.map": "/debater/static/js/787.ffe28306.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f5bf8d9a.css",
-    "static/js/main.ad65a419.js"
+    "static/css/main.8c4d46d5.css",
+    "static/js/main.3fdef72f.js"
   ]
 }
