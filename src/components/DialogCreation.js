@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaTrash, FaRedo, FaLightbulb, FaPlus, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaTrash, FaRedo, FaPlus, FaArrowUp, FaArrowDown, FaVolumeUp } from 'react-icons/fa';
 import { elevenTextToSpeech, concatenateStatementsAudio } from '../api/audio';
 
 const DialogCreation = ({ speakers, apiKey }) => {
@@ -144,7 +144,7 @@ const DialogCreation = ({ speakers, apiKey }) => {
                                     className={`font-bold py-2 px-4 rounded ${statement.text === statement.prevText ? 'bg-green-500 hover:bg-green-700 text-white' : 'bg-yellow-500 hover:bg-yellow-700 text-white'}`}
                                     onClick={() => generateAudioForStatement(index)}
                                     title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
-                                    {statement.text === statement.prevText ? <FaRedo /> : <FaLightbulb />}
+                                    {statement.text === statement.prevText ? <FaRedo /> : <FaVolumeUp />}
                                 </button>
                                 <button
                                     className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${index === 0 ? ' opacity-50 cursor-not-allowed' : ''}`}
