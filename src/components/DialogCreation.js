@@ -9,7 +9,7 @@ const DialogCreation = ({ speakers, apiKey }) => {
     const dialogAudioRef = useRef(null);
 
     const addStatement = () => {
-        setDialog([...dialog, { speaker: speakers[0]?.voice_id, text: '', }]);
+        setDialog([...dialog, { speaker: speakers[0]?.voice_id, text: '', is_loading: false }]);
     };
 
     const updateStatement = (index, field, value) => {
@@ -50,10 +50,14 @@ const DialogCreation = ({ speakers, apiKey }) => {
         const voiceId = statement.speaker; // Get the voiceId from the statement
 
         try {
+            // Show spinner while generating audio
+            setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, is_loading: true } : line));
             const audioBlob = await elevenTextToSpeech(apiKey, voiceId, statement.text);
-            setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, generatedAudio: audioBlob, prevText: line.text } : line));
+            setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, generatedAudio: audioBlob, prevText: line.text, is_loading: false } : line));
         } catch (error) {
             console.error('Error in generating audio:', error);
+            // Hide spinner and handle error
+            setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, is_loading: false } : line));
         }
     };
 
@@ -112,6 +116,26 @@ const DialogCreation = ({ speakers, apiKey }) => {
         }
     }, [generatedDialogAudio]);
 
+    const generateButton = (index, statement) => {
+        const spinner_div = <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>;
+        let content;
+        if (statement.is_loading) {
+            content = spinner_div;
+        }
+        else {
+            content = statement.text === statement.prevText ? <FaRedo /> : <FaVolumeUp />;
+        }
+
+        return (
+            <button
+                className={`font-bold py-2 px-4 rounded ${statement.text === statement.prevText ? 'bg-green-500 hover:bg-green-700 text-white' : 'bg-yellow-500 hover:bg-yellow-700 text-white'}`}
+                onClick={() => generateAudioForStatement(index)}
+                title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
+                {content}
+            </button>
+        );
+    }
+
     return (
         <div className="flex flex-col items-center p-4">
             <div className="w-full max-w-xl space-y-4">
@@ -140,12 +164,8 @@ const DialogCreation = ({ speakers, apiKey }) => {
                                     onClick={() => removeStatement(index)}>
                                     <FaTrash />
                                 </button>
-                                <button
-                                    className={`font-bold py-2 px-4 rounded ${statement.text === statement.prevText ? 'bg-green-500 hover:bg-green-700 text-white' : 'bg-yellow-500 hover:bg-yellow-700 text-white'}`}
-                                    onClick={() => generateAudioForStatement(index)}
-                                    title={statement.text === statement.prevText ? 'Regenerate Audio' : 'Generate Audio'}>
-                                    {statement.text === statement.prevText ? <FaRedo /> : <FaVolumeUp />}
-                                </button>
+                                {generateButton(index, statement)}
+                                
                                 <button
                                     className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${index === 0 ? ' opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={() => moveStatementUp(index)}
