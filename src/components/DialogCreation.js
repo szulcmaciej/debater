@@ -66,12 +66,14 @@ const DialogCreation = ({ speakers, apiKey }) => {
         await Promise.all(dialog.map(async (statement, index) => {
             if (!statement.generatedAudio || statement.text !== statement.prevText) {
                 try {
+                    setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, is_loading: true } : line));
                     const audioBlob = await elevenTextToSpeech(apiKey, statement.speaker, statement.text);
+                    setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, generatedAudio: audioBlob, prevText: line.text, is_loading: false } : line));
                     newDialog[index] = { ...statement, generatedAudio: audioBlob, prevText: statement.text };
                 } catch (error) {
                     console.error('Error in generating audio:', error);
+                    setDialog(prevDialog => prevDialog.map((line, i) => i === index ? { ...line, is_loading: false } : line));
                 }
-
             }
         }));
         setDialog(newDialog);
