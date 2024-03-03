@@ -6,14 +6,19 @@ import DialogCreation from './components/DialogCreation';
 
 const App = () => {
   const [globalApiKey, setGlobalApiKey] = useState('');
-  const [voices, setVoices] = useState([]);
+  const [allVoices, setVoices] = useState([]);
+  const [clonedOnly, setClonedOnly] = useState(true);
+
+  const onlyClonedVoices = (voices) => {
+    return voices.filter(voice => voice.category === 'cloned');
+  }
 
   useEffect(() => {
     if (globalApiKey) {
       fetchVoices(globalApiKey)
-        .then(voices => {
-          console.log('Fetched voices:', voices); // Check the structure here
-          setVoices(voices);
+        .then(allVoices => {
+          console.log('Fetched voices:', allVoices); // Check the structure here
+          setVoices(allVoices);
         })
         .catch(error => {
           console.error('Error fetching voices:', error);
@@ -22,11 +27,13 @@ const App = () => {
     }
   }, [globalApiKey]);
 
+  const filteredVoices = clonedOnly ? onlyClonedVoices(allVoices) : allVoices;
+
   return (
     <div>
       <APIKeyManager setGlobalApiKey={setGlobalApiKey} />
-      {/* <SpeakersManagement /> */}
-      <DialogCreation speakers={voices} apiKey={globalApiKey}/>
+      <SpeakersManagement clonedOnly={clonedOnly} setClonedOnly={setClonedOnly} />
+      <DialogCreation speakers={filteredVoices} apiKey={globalApiKey}/>
     </div>
   );
 };

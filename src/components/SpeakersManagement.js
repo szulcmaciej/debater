@@ -1,21 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const SpeakersManagement = () => {
-  const [files, setFiles] = useState([]);
-
-  const handleFileChange = (event) => {
-    setFiles([...files, ...event.target.files]);
-  };
+const SpeakersManagement = ({clonedOnly, setClonedOnly}) => {
+  const handleCheckboxChange = (event) => {
+    setClonedOnly(event.target.checked);
+  }
 
   return (
-    <div>
-      <h2>Upload Voice Samples</h2>
-      <input type="file" onChange={handleFileChange} multiple />
-      <ul>
-        {files.map((file, index) => (
-          <li key={index}>{file.name}</li>
-        ))}
-      </ul>
+    <div className="text-center">
+      <label className="inline-flex items-center cursor-pointer">
+        <input type="checkbox" value="" class="sr-only peer" checked={clonedOnly} onChange={handleCheckboxChange} />
+        <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        <span className="ms-3 text-sm font-medium">Cloned voices only</span>
+      </label>
+
     </div>
   );
 };
